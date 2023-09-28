@@ -1,4 +1,6 @@
 import random
+
+import Utils as Ut
 import sympy as sp
 import math
 
@@ -8,7 +10,7 @@ alphabet = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l",
 
 
 def encrypt(key: sp.Matrix, data: str) -> str:
-    numbers: [int] = getNumbers(data)
+    numbers: [int] = Ut.getNumbers(data, alphabet)
     resultIndexes: [int] = []
 
     length = len(key.row(0))
@@ -32,59 +34,48 @@ def encrypt(key: sp.Matrix, data: str) -> str:
     for i in range(0, len(resultIndexes)):
         resultIndexes[i] = resultIndexes[i] % alphabetLen
 
-    result = getLetters(resultIndexes)
+    result = Ut.getLetters(resultIndexes, alphabet)
 
     return result
 
 
 def decrypt(key: sp.Matrix, data: str) -> str:
-    mod = len(alphabet)
 
-    det = key.det()
-    key = key.adjugate() % mod
-
-    det = det % mod
-
-    invDet = pow(det, -1, mod)
-
-    key = key * invDet
+    key = Ut.getInvByMod(key, len(alphabet))
 
     return encrypt(key, data)
 
+def generateRandKey(side: int) -> sp.Matrix:
+    key: sp.Matrix = sp.zeros(side, side)
 
-def getNumbers(data) -> [int]:
-    data = data.lower()
+    while key.det() == 0:
+        mod = len(alphabet)
+        for j in range(side):
+            for i in range(side):
+                key[j, i] = random.randint(0, mod)
 
-    numbers: [int] = []
-
-    for letter in data:
-        numbers.append(alphabet.index(letter))
-
-    return numbers
-
-
-def getLetters(data) -> str:
-    result = ""
-
-    for number in data:
-        result += alphabet[int(number)]
-
-    return result
+    return key
 
 
-def changeRandomLetters(text: str) -> str:
-    length = len(text)
+# https://habr.com/ru/articles/710890/
+def getKeyByText(encrypted: str, text: str) -> sp.Matrix:
+    size = len(encrypted)
+    if size != len(text): return
 
-    count = 3
-    if length < 4:
-        count = 1
+    side = int(size ** 0.5)
+    C: sp.Matrix = sp.zeros(side, side)
+    P: sp.Matrix = sp.zeros(side, side)
 
-    size = len(alphabet)
-    for j in range(count):
-        i = random.randint(0, length - 1)
-        new = alphabet[random.randint(0, size - 1)]
-        text = text[:i] + new + text[i + 1:]
+    ecrN: [int] = Ut.getNumbers(encrypted, alphabet)
+    textN: [int] = Ut.getNumbers(text, alphabet)
 
-    return text
-
+    for i in range(side):
+        for j in range(side):
+            C[i, j] = ecrN[i + j * side]
+            P[i, j] = textN[i + j * side]
+    P = Ut.getInvByMod(P, len(alphabet))
+    print(P)
+    print(C)
+    key = P * C % len(alphabet)
+    return key
 

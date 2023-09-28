@@ -52,7 +52,7 @@ def generateRandKey(side: int) -> sp.Matrix:
         mod = len(alphabet)
         for j in range(side):
             for i in range(side):
-                key[j, i] = random.randint(0, mod)
+                key[j, i] = random.randint(0, mod - 1)
 
     return key
 
@@ -74,8 +74,6 @@ def getKeyByText(encrypted: str, text: str) -> sp.Matrix:
             C[i, j] = ecrN[i + j * side]
             P[i, j] = textN[i + j * side]
     P = Ut.getInvByMod(P, len(alphabet))
-    print(P)
-    print(C)
-    key = P * C % len(alphabet)
+    key = C * P % len(alphabet)
     return key
 

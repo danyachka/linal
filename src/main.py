@@ -42,12 +42,11 @@ def secondPart():
     if impt == "n": return
     key = HillEncryption.getKeyByText(gottenEncrypted, gottenText)
     secretText = HillEncryption.decrypt(key, superSecretEncrypted)
-    print("\n\nNice - you got " + secretText)
+    print("\n\nNice, second message - " + secretText)
     print("key is ")
     print(key)
 
 
 if __name__ == '__main__':
-    print(len(HillEncryption.alphabet))
     #firstPart()
     secondPart()

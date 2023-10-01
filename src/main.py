@@ -1,6 +1,7 @@
 import sympy as sp
 import Utils as Ut
 import src.HillEncryption as HillEncryption
+import src.Hemming as Hemming
 
 
 def firstPart():
@@ -26,9 +27,9 @@ def firstPart():
 def secondPart():
     key: sp.Matrix = HillEncryption.generateRandKey(2)
 
-    superSecretEncrypted = HillEncryption.encrypt(key, "danila")
+    superSecretEncrypted = HillEncryption.encrypt(key, "данила")
 
-    gottenText = "road"
+    gottenText = "фото"
     gottenEncrypted = HillEncryption.encrypt(key, gottenText)
     print("You are super hacker, and you got:\n" +
           gottenEncrypted + " -> " + gottenText +"\n" +
@@ -46,7 +47,24 @@ def secondPart():
     print("key is ")
     print(key)
 
+def thirdPart():
+    Hemming.defineMatrices()
+    print("Without any errors:")
+    encrypted = Hemming.encryptMessage("лайм", Hemming.G)
+    print("Encrypted is " + encrypted + "\n")
+    decrypted = Hemming.decrypt(encrypted)
+    print("\nDecrypted is " + decrypted + "\n\n")
+
+    for i in range(1, 5):
+        print("With " + str(i) + " error:")
+        encrypted = Hemming.encryptMessage("лайм", Hemming.G)
+        encrypted = Hemming.changeRandomBit(encrypted, i)
+        print("Encrypted is " + encrypted + "\n")
+        decrypted = Hemming.decrypt(encrypted)
+        print("\nDecrypted is " + decrypted + "\n\n")
+
 
 if __name__ == '__main__':
-    #firstPart()
-    secondPart()
+    firstPart()
+    #secondPart()
+    #thirdPart()
